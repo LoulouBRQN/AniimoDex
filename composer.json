@@ -1,0 +1,18 @@
+{
+    "name": "louis-brqn/aniimo-dex",
+    "description": "projet Aweb aniimo-dex",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "LouisBrqn\\AniimoDex\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "louis-brqn",
+            "email": "louis.brqn@eduge.ch"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
