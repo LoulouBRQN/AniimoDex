@@ -1,5 +1,9 @@
 <?php
+    require __DIR__ . "./../vendor/autoload.php";
+
     use Slim\Factory\AppFactory;
+
+    require __DIR__ . '/../src/Config/env.php';
 
     require_once __DIR__ . '/../src/Config/env.php';
     $appName = $_ENV['APP_NAME'];
