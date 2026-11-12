@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Controllers;
+
+use Psr\Http\Message\ResponseInterface as Response;
+
+class Controller {
+
+    protected function render(string $title, Response $response, string $view, array $data = []): Response
+    {
+        extract($data, EXTR_SKIP);
+
+        ob_start();
+        include dirname(__DIR__) . '/Views/' . $view . '.php';
+        $response->getBody()->write(ob_get_clean());
+
+        return $response;
+    }
+}

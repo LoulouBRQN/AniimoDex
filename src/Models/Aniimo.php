@@ -9,10 +9,9 @@ class Aniimo extends Element{
     private(set) int $id;
     private(set) string $nom;
     private(set) string $forme;
-
     private(set) bool $estDejaCapturer = false;
 
-    public function __construct(int $id, string $nom, string $forme, ?array $elements = null)
+    public function __construct(int $id, string $nom, string $forme, bool $estDejaCapturer = false, ?array $elements = null)
     {
         parent::__construct($elements);
         $this->id = $id;
@@ -20,13 +19,13 @@ class Aniimo extends Element{
         $this->forme = $forme;
     }
 
-    function EstCapturer() : void 
+    function EstCapturer($idUser) : void 
     {
         $this->estDejaCapturer = true;
     }
     
 
-    public static function findAll(): array
+    public static function findAll(int $idUser): array
     {
         $pdo = Database::getConnection();
 
@@ -35,35 +34,47 @@ class Aniimo extends Element{
                 a.idAnimo,
                 a.nom,
                 a.forme,
-                e.typeElement
+                COALESCE(
+                    (
+                        SELECT JSON_ARRAYAGG(e.typeElement)
+                        FROM Element e
+                        WHERE e.idAnimo = a.idAnimo
+                    ),
+                    JSON_ARRAY()
+                ) AS elements,
+                EXISTS (
+                    SELECT 1
+                    FROM Aniimo_User au
+                    WHERE au.idAniimo = a.idAnimo
+                    AND au.idUser = :idUser
+                ) AS captured
             FROM Animo a
-            LEFT JOIN Element e ON a.idAnimo = e.idAnimo
             ORDER BY a.idAnimo
         ';
 
-        $statement = $pdo->query($sql);
+        $statement = $pdo->prepare($sql);
+        $statement->execute([":idUSer" => $idUser]);
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         $aniimos = [];
 
         foreach ($rows as $row) {
-            $id = $row['idAnimo'];
 
-            if (!isset($aniimos[$id])) {
-                $aniimos[$id] = new self(
-                    $row['idAnimo'],
-                    $row['nom'],
-                    $row['forme'],
-                    $row['typeElement']
-                );
-            }
+            $row['elements'] = json_decode($row['elements'], true);
+            $aniimos[] = new self(
+                $row['idAnimo'],
+                $row['nom'],
+                $row['forme'],
+                $row['captured'],
+                $row['elements']
+            );
 
             // if ($row['typeElement'] !== null) {
             //     $aniimos[$id]->addElement($row['typeElement']);
             // }
         }
 
-        return array_values($aniimos);
+        return $aniimos;
     }
 
 }
