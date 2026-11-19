@@ -6,3 +6,6 @@
     <title><?=isset($title) ? $title : "Aniimodex" ?></title>
 </head>
 <body>
+    <header>
+        
+    </header>

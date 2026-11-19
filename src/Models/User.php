@@ -27,12 +27,14 @@ class User{
                 email,
                 motDePasse,
             FROM User
-            WHERE email = $email
-            AND motDePasse = $password
+            WHERE email = :email
+            AND motDePasse = :password
 
         ";
 
-        $statement = $pdo->query($sql);
+        $statement = $pdo->prepare($sql);
+        $statement->execute([":email" => $email]);
+        $statement->execute([":password" => $password]);
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         if ($rows != null) {
