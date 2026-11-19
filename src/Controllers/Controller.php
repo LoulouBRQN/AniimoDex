@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 class Controller {
 
-    protected function render(string $title, Response $response, string $view, array $data = []): Response
+    protected function render(Response $response, string $view, array $data = []): Response
     {
         extract($data, EXTR_SKIP);
 
